@@ -35,21 +35,39 @@ const loginSchema = z.object({
 //    - A new user is created in the database using Prisma.
 //    - If successful, it logs the registration event and responds with a success message and the user ID.
 //    - If validation fails, it responds with a 400 status and the validation issues. For other errors, it logs the error and responds with a 500 status.
+// services/auth-service/src/controllers/auth.controller.ts
+
 export const register = async (req: Request, res: Response) => {
   try {
+    console.log("--> [1/5] Register function started.");
+
     const { email, name, password } = registerSchema.parse(req.body);
+    console.log(
+      `--> [2/5] Request body parsed successfully for email: ${email}`
+    );
+
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("--> [3/5] Password hashed successfully.");
+
+    console.log("--> [4/5] Attempting to create user in database...");
     const user = await prisma.user.create({
       data: { email, name: name ?? null, password: hashedPassword },
     });
+    console.log(`--> [5/5] User created successfully with ID: ${user.id}`);
+
     logger.info(`User registered: ${user.email}`);
     res
       .status(201)
       .json({ message: "User registered successfully", userId: user.id });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("Zod Validation Error:", error.issues);
       return res.status(400).json(error.issues);
     }
+    console.error(
+      "--> [ERROR] An error occurred in the register function:",
+      error
+    );
     logger.error(`Registration error: ${error}`);
     res.status(500).json({ error: "Internal server error" });
   }

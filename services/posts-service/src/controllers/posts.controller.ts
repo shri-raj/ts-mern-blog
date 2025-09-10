@@ -47,11 +47,12 @@ export const createPost = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await prisma.post.findMany({
       where: { published: true },
-      include: { author: { select: { name: true, email: true } } },
+      include: { author: true },
       orderBy: { createdAt: "desc" },
     });
     res.status(200).json(posts);
@@ -69,14 +70,15 @@ export const getPostById = async (req: Request, res: Response) => {
     }
     const post = await prisma.post.findUnique({
       where: { id },
-      include: { author: { select: { name: true, email: true } } },
+      // CORRECTED: Also fixed here for consistency.
+      include: { author: true },
     });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
     res.status(200).json(post);
   } catch (error) {
-    logger.error("Error fetching post by ID: ${req.params.id}", error);
+    logger.error(`Error fetching post by ID: ${req.params.id}`, error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -112,7 +114,7 @@ export const updatePost = async (req: Request, res: Response) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json(error.issues);
     }
-    logger.error("Error updating post with ID: ${req.params.id}", error);
+    logger.error(`Error updating post with ID: ${req.params.id}`, error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -138,7 +140,7 @@ export const deletePost = async (req: Request, res: Response) => {
     logger.info(`Post with ID: ${id} deleted by User ID: ${userid}`);
     res.status(204).send();
   } catch (error) {
-    logger.error("Error deleting post with ID: ${req.params.id}", error);
+    logger.error(`Error deleting post with ID: ${req.params.id}`, error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -47,24 +47,32 @@ app.use(
   createProxyMiddleware({
     target: services.auth,
     changeOrigin: true,
-    onProxyReq: fixRequestBody,
-  } as any)
+    on: {
+      proxyReq: fixRequestBody,
+    },
+  })
 );
+
 app.use(
   "/api/posts",
   createProxyMiddleware({
     target: services.posts,
     changeOrigin: true,
-    onProxyReq: fixRequestBody,
-  } as any)
+    on: {
+      proxyReq: fixRequestBody,
+    },
+  })
 );
+
 app.use(
   "/api/qa",
   createProxyMiddleware({
     target: services.qa,
     changeOrigin: true,
-    onProxyReq: fixRequestBody,
-  } as any)
+    on: {
+      proxyReq: fixRequestBody,
+    },
+  })
 );
 
 const PORT = 4000;

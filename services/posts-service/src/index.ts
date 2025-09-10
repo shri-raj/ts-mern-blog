@@ -17,7 +17,7 @@ app.use(express.json());
 
 setupSwagger(app);
 
-app.use("/api/posts", postRoutes);
+app.use("/", postRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "UP", message: "Posts service is healthy" });

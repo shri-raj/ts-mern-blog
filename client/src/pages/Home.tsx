@@ -6,7 +6,10 @@ interface Post {
     id: string;
     title: string;
     content: string;
-    author: { name: string };
+    author: {
+        id: string;
+        name: string | null;
+    };
     createdAt: string;
 }
 
@@ -31,6 +34,18 @@ const Home: React.FC = () => {
         fetchPosts();
     }, []);
 
+    const handleDeletePost = async (postId: string) => {
+        if (window.confirm("Are you sure you want to delete this post?")) {
+            try {
+                await api.delete(`/posts/${postId}`);
+                setPosts(posts.filter(post => post.id !== postId));
+            } catch (error) {
+                console.error("Failed to delete post", error);
+                alert("Failed to delete the post. Please try again.");
+            }
+        }
+    };
+
     return (
         <div>
             <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Latest Posts</h1>
@@ -41,7 +56,7 @@ const Home: React.FC = () => {
             ) : posts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map(post => (
-                        <PostCard key={post.id} post={post} />
+                        <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
                     ))}
                 </div>
             ) : (
