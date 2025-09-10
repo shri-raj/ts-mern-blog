@@ -13,7 +13,7 @@ except Exception as e:
     model = None
 
 vector_store = []
-POSTS_SERVICE_URL = "http://posts-service:4002/api/posts"
+POSTS_SERVICE_URL = "http://localhost:4002/api/posts"
 
 def generate_embedding(text):
     if model is None:
